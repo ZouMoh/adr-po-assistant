@@ -1,8 +1,9 @@
-# ADR PO Assistant V5
+# ADR PO Assistant V6
 
-Fichiers à mettre à la racine du dépôt GitHub Pages :
+Application GitHub Pages pour gérer ADR, CR, décisions, actions, risques, divergences et versions.
+
+Fichiers à la racine :
 - index.html
 - style.css
 - app.js
-
-Les données sont stockées dans le navigateur. Utiliser Exporter JSON pour sauvegarder.
+- README.md
