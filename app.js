@@ -1,15 +1,63 @@
-const KEYS=["adr_po_assistant_v7","adr_po_assistant_v6","adr_po_assistant_v5","adr_po_assistant_v4","adr_po_assistant_v3","adr_po_assistant_v2","adr_po_assistant_v1","adr_data_v4","adr_data_v3","adr_data_v2"];
-const KEY="adr_po_assistant_v7";
-const demo={topics:[
-{id:"traductions",name:"Gestion des traductions",description:"Processus de traduction du portail modulaire.",tags:["Portail","Traductions","PAETRAD"],adrs:[{id:"trads_1",titre:"Atelier – Gestion des traductions du portail modulaire",date:"2026-06-30",participants:["Stéphane Montharoux","Adil Daicha","Melvin Namont","Richard Girault","Zoureiya Mohamed"],objectif:"Définir un processus commun de gestion des traductions afin de sécuriser les livraisons des différents modules, d'automatiser le cycle de diffusion des traductions et de clarifier les responsabilités.",pointsAbordes:["Responsabilité des équipes de développement sur les clés de traduction","Suppression souhaitée des patchs de traduction","Mécanisme de diff entre versions","Revue avec l'équipe de traduction avant recette","Réalisation des traductions par les équipes PAE"],compteRendu:"Les équipes convergent vers un processus commun de gestion des traductions dans le portail modulaire. Les développeurs gèrent les clés, mais ne valident pas la qualité linguistique. L'objectif est de supprimer les patchs de traduction en automatisant la diffusion vers les environnements. Une US dédiée permettra le suivi avec la demande PAETRAD.",divergences:["Gestion des traductions communes common et impacts multi-modules","Cas où une livraison uniquement en français est acceptable","Modalités exactes de propagation automatique entre environnements"],decisions:[{decision:"L’environnement de dev devient l’environnement de référence des traductions.",impact:"Point d’entrée des évolutions.",statut:"Validée"},{decision:"Créer une US dédiée au suivi des traductions pour chaque module livré.",impact:"Traçabilité et suivi.",statut:"Validée"},{decision:"Associer l’US à une demande PAETRAD.",impact:"Suivi jusqu’à validation finale.",statut:"Validée"}],actions:[{action:"Définir le fonctionnement du mécanisme de diff des clés de traduction.",responsable:"Équipe Portail",echeance:"Non précisée",priorite:"Haute",statut:"À faire"},{action:"Recenser les demandes d’évolution à adresser à l’équipe Portail.",responsable:"Zoureiya & Laissa",echeance:"Non précisée",priorite:"Haute",statut:"À faire"},{action:"Présenter la solution de diffusion automatique à DPI-MCO.",responsable:"Équipe Portail",echeance:"Non précisée",priorite:"Moyenne",statut:"À faire"}],risques:[{risque:"Modification d'une traduction common pouvant impacter plusieurs modules.",impact:"Régression transverse.",statut:"À surveiller"}],questionsOuvertes:["Comment gérer précisément les common ?","Quel mécanisme technique pour la propagation automatique ?"],motsCles:["Traductions","PAETRAD","Common","Diff","Portail"],version:1,versions:[]} ]},
-{id:"modules",name:"Définition d'un module",description:"Définition et règles de découpage d'un module dans le portail modulaire.",tags:["Architecture","Module","Portail"],adrs:[{id:"module_1",titre:"Atelier – Définition d’un module dans le portail modulaire",date:"2026-07-03",participants:["Zoureiya Mohamed","Adil Daicha","Laissa Pandaure"],objectif:"Converger vers une définition commune de la notion de module, d'un point de vue fonctionnel et technique.",pointsAbordes:["Définition d’un module","Distinction portail / application / module","Lien avec une One Team","Taille indicative d’environ 50 pages","Exemple Contrôle Stock / Traçabilité"],compteRendu:"L’atelier a permis de clarifier qu’un module est à la fois une brique technique et une brique fonctionnelle. Il doit représenter un domaine métier cohérent et rester de taille raisonnable. L’exemple Stock montre qu’une même équipe peut gérer plusieurs modules si les cycles de vie ou les périmètres fonctionnels diffèrent.",divergences:["Critères exacts de création d’un nouveau module","Critères obligatoires vs recommandations","Lien cible entre équipe et module","Métriques de référence au-delà du seuil indicatif de 50 pages"],decisions:[{decision:"Un module possède une double dimension fonctionnelle et technique.",impact:"Conception selon les deux axes.",statut:"Validée"},{decision:"Le cycle de vie peut justifier la création de modules distincts.",impact:"Découpage possible selon les livraisons.",statut:"Principe retenu"}],actions:[{action:"Formaliser une définition commune de la notion de module.",responsable:"Équipe Portail",echeance:"À définir",priorite:"Haute",statut:"À faire"},{action:"Définir les critères de création d’un nouveau module.",responsable:"Équipe Portail",echeance:"À définir",priorite:"Haute",statut:"À faire"}],risques:[{risque:"Absence de définition commune.",impact:"Découpages hétérogènes selon les équipes.",statut:"À traiter"}],questionsOuvertes:["Quand créer un nouveau module plutôt qu’une page supplémentaire ?","Quelle gouvernance entre équipe et module ?"],motsCles:["Module","Portail modulaire","One Team","Cycle de vie","Architecture"],version:1,versions:[]} ]},
-{id:"tracabilite",name:"Traçabilité / EDI",description:"Sujets INCO, EDI, tables WMS et règles métier.",tags:["EDI","WMS","Traçabilité"],adrs:[]}
+const KEYS=["adr_po_assistant_v8","adr_po_assistant_v7","adr_po_assistant_v6","adr_po_assistant_v5","adr_po_assistant_v4","adr_po_assistant_v3","adr_po_assistant_v2","adr_po_assistant_v1","adr_data_v4","adr_data_v3","adr_data_v2","po_assistant_v4"];
+const KEY="adr_po_assistant_v8";
+const emptyData={topics:[
+{id:"traductions",name:"Gestion des traductions",description:"Suivi du processus de traduction du portail modulaire.",tags:["Portail","Traductions"],adrs:[]},
+{id:"portail",name:"Portail Modulaire",description:"Décisions et ateliers liés au portail modulaire.",tags:["Portail","Module"],adrs:[]},
+{id:"tracabilite",name:"Traçabilité / EDI",description:"Sujets INCO, EDI, traçabilité et tables WMS.",tags:["EDI","WMS"],adrs:[]},
+{id:"mobilog",name:"Mobilog",description:"Sujets Mobilog, cariste, missions et localisation.",tags:["Mobilog"],adrs:[]}
 ]};
 let data=load();let currentTopicId=data.topics[0]?.id,editIndex=null,selectedVersion=null;
-function load(){for(const k of KEYS){const raw=localStorage.getItem(k);if(raw){try{let d=JSON.parse(raw);migrate(d);if(d.topics&&d.topics.length)return d}catch(e){}}}let d=JSON.parse(JSON.stringify(demo));migrate(d);return d}
-function id(){return"adr_"+Date.now()+"_"+Math.random().toString(16).slice(2)}function save(){localStorage.setItem(KEY,JSON.stringify(data))}
+
+function load(){for(const k of KEYS){const raw=localStorage.getItem(k);if(raw){try{let d=normalizeData(JSON.parse(raw));if(d.topics&&d.topics.length)return d}catch(e){console.warn("migration impossible",k,e)}}}return normalizeData(JSON.parse(JSON.stringify(emptyData)))}
+function normalizeData(raw){
+  if(raw.subjects && !raw.topics){
+    raw={topics:raw.subjects.map(s=>({
+      id:s.id||makeTopicId(s.name),
+      name:s.name||"Sujet sans nom",
+      description:s.summary||s.description||"",
+      tags:s.tags||[],
+      adrs:convertV4AdrArray(s.adr||s.adrs||[]),
+      cr:s.cr||[]
+    }))};
+  }
+  if(!raw.topics) raw.topics=[];
+  raw.topics=raw.topics.map(t=>{
+    const adrs=t.adrs || t.adr || t.meetings || [];
+    const converted=Array.isArray(adrs)?convertAdrList(adrs):[];
+    return {
+      id:t.id||makeTopicId(t.name),
+      name:t.name||"Sujet sans nom",
+      description:t.description||t.summary||"",
+      tags:t.tags||t.badges||[],
+      adrs:converted,
+      cr:t.cr||[]
+    };
+  });
+  return raw;
+}
+function convertV4AdrArray(list){
+  if(!list.length) return [];
+  const groups={};
+  list.forEach(a=>{
+    const key=(a.titre||a.title||"ADR").trim().toLowerCase();
+    if(!groups[key]) groups[key]=[];
+    groups[key].push(a);
+  });
+  const result=[];
+  Object.values(groups).forEach(arr=>{
+    const normalized=arr.map((a,i)=>norm({...a,version:i+1}));
+    const active=normalized[normalized.length-1];
+    active.version=normalized.length;
+    active.versions=normalized.slice(0,-1).reverse().map(v=>{const copy={...v}; delete copy.versions; copy.archivedAt=new Date().toISOString(); return copy;});
+    result.push(active);
+  });
+  return result;
+}
+function convertAdrList(list){return list.map(a=>norm(a))}
+function id(){return"adr_"+Date.now()+"_"+Math.random().toString(16).slice(2)}
+function makeTopicId(name){return String(name||"sujet").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"_").replace(/^_|_$/g,"")||("topic_"+Date.now())}
+function save(){localStorage.setItem(KEY,JSON.stringify(data))}
 function topic(){return data.topics.find(t=>t.id===currentTopicId)||data.topics[0]}
-function migrate(d){if(!d.topics)d.topics=[];d.topics.forEach(t=>{if(!t.adrs&&t.meetings)t.adrs=t.meetings;if(!t.tags&&t.badges)t.tags=t.badges;if(!t.tags)t.tags=[];if(!t.adrs)t.adrs=[];t.adrs.forEach(a=>{if(!a.id)a.id=id();if(!a.version)a.version=1;if(!a.versions)a.versions=[];if(a.risks&&!a.risques)a.risques=a.risks;if(!a.risques)a.risques=[];if(!a.divergences)a.divergences=[];if(!a.pointsAbordes)a.pointsAbordes=[];if(!a.decisions)a.decisions=[];if(!a.actions)a.actions=[];if(!a.questionsOuvertes)a.questionsOuvertes=[]})})}
 function norm(a){return{id:a.id||id(),titre:a.titre||a.title||"ADR sans titre",date:a.date||new Date().toISOString().slice(0,10),participants:Array.isArray(a.participants)?a.participants:(a.participants?String(a.participants).split(",").map(x=>x.trim()).filter(Boolean):[]),objectif:a.objectif||"",pointsAbordes:a.pointsAbordes||a.points_abordes||[],compteRendu:a.compteRendu||a.cr||a.synthese||"",divergences:a.divergences||a.pointsDivergence||[],decisions:a.decisions||[],actions:a.actions||[],risques:a.risques||a.risks||[],questionsOuvertes:a.questionsOuvertes||a.questions||[],motsCles:a.motsCles||a.keywords||[],version:a.version||1,versions:a.versions||[],createdAt:a.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()}}
 function archive(t,i){let a=t.adrs[i],v=JSON.parse(JSON.stringify(a));delete v.versions;v.archivedAt=new Date().toISOString();a.versions=a.versions||[];a.versions.unshift(v)}
 function render(){renderTopics();renderCurrent();renderSearch();syncSelectors();save()}
@@ -18,7 +66,7 @@ function renderCurrent(){let t=topic(),adrs=t.adrs,vers=adrs.flatMap(a=>a.versio
 function renderVersions(){let out=[];topic().adrs.forEach((a,ai)=>(a.versions||[]).forEach((v,vi)=>out.push(`<div class="version" onclick="openVersion(${ai},${vi})"><strong>${esc(a.titre)} — ancienne v${esc(v.version)}</strong><br><small>Archivée le ${esc(fmt(v.archivedAt))}</small><p>${esc((v.objectif||v.compteRendu||"").slice(0,260))}</p></div>`)));versions.innerHTML=out.length?out.join(""):"<p>Aucune version historisée.</p>"}
 function table(h,rows){if(!rows.length)return"<p>Aucun élément.</p>";return`<table><tr>${h.map(x=>`<th>${esc(x)}</th>`).join("")}</tr>${rows.map(r=>`<tr>${r.map(c=>`<td>${esc(c||"")}</td>`).join("")}</tr>`).join("")}</table>`}
 function tab(n,b){document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));document.querySelectorAll(".tabs button").forEach(x=>x.classList.remove("active"));document.getElementById("tab-"+n).classList.add("active");b.classList.add("active")}
-function newTopic(){let name=prompt("Nom du sujet :");if(!name)return;let tid="topic_"+Date.now();data.topics.push({id:tid,name,description:"",tags:["ADR"],adrs:[]});currentTopicId=tid;render()}
+function newTopic(){let name=prompt("Nom du sujet :");if(!name)return;let tid=makeTopicId(name)+"_"+Date.now();data.topics.push({id:tid,name,description:"",tags:["ADR"],adrs:[]});currentTopicId=tid;render()}
 function editTopic(){let t=topic(),d=prompt("Description du sujet :",t.description||"");if(d!==null){t.description=d;render()}}
 function openAnalyzer(){syncSelectors();analyzer.classList.remove("hidden")}function closeAnalyzer(){analyzer.classList.add("hidden")}
 function syncSelectors(){let opts=data.topics.map(t=>`<option value="${t.id}" ${t.id===currentTopicId?"selected":""}>${esc(t.name)}</option>`).join("");["anTopic","saveTopic"].forEach(x=>{let e=document.getElementById(x);if(e)e.innerHTML=opts});if(mailSelect)mailSelect.innerHTML=(topic().adrs||[]).map((a,i)=>`<option value="${i}">${esc(a.date)} - ${esc(a.titre)} v${a.version}</option>`).join("")}
@@ -78,7 +126,7 @@ N'hésitez pas à compléter ou corriger cette synthèse si nécessaire.
 Bonne journée à tous.`}
 function copyMail(){navigator.clipboard.writeText(mailOutput.value);alert("Mail copié")}
 function renderSearch(){let q=(globalSearch?.value||"").toLowerCase();if(!searchResults)return;if(!q){searchResults.innerHTML="<p>Saisir un mot-clé.</p>";return}let res=[];data.topics.forEach(t=>t.adrs.forEach(a=>{if(JSON.stringify(a).toLowerCase().includes(q))res.push([t.name,a.date,a.titre,"Active v"+a.version,(a.compteRendu||a.objectif||"").slice(0,220)]);(a.versions||[]).forEach(v=>{if(JSON.stringify(v).toLowerCase().includes(q))res.push([t.name,v.date,v.titre,"Historique v"+v.version,(v.compteRendu||v.objectif||"").slice(0,220)])})}));searchResults.innerHTML=table(["Sujet","Date","ADR","Version","Extrait"],res)}
-function exportData(){let blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="adr_po_assistant_sauvegarde_v7.json";a.click()}
-function importData(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=x=>{data=JSON.parse(x.target.result);migrate(data);currentTopicId=data.topics[0]?.id;render()};r.readAsText(f)}
+function exportData(){let blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="adr_po_assistant_sauvegarde_v8.json";a.click()}
+function importData(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=x=>{try{data=normalizeData(JSON.parse(x.target.result));currentTopicId=data.topics[0]?.id;render();alert("Import réussi : historique converti.")}catch(err){alert("Import impossible : "+err.message)}};r.readAsText(f)}
 function clean(v){return v.trim().replace(/^```json/i,"").replace(/^```/i,"").replace(/```$/i,"").trim()}function lines(id){return document.getElementById(id).value.split("\n").map(x=>x.trim()).filter(Boolean)}function fmt(v){try{return new Date(v).toLocaleString("fr-FR")}catch{return v||""}}function esc(v){return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
 render();

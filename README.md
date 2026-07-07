@@ -1,8 +1,12 @@
-# ADR PO Assistant V7
+# ADR PO Assistant V8
 
-V7 avec migration automatique des anciennes données et deux ADR de démarrage :
-- Gestion des traductions
-- Définition d'un module
+V8 avec import intelligent compatible V4.
+
+Pour récupérer ton historique :
+1. Ouvre le site
+2. Clique sur Import JSON
+3. Sélectionne `po_assistant_v4_sauvegarde.json`
+4. Les sujets et versions sont convertis automatiquement
 
 Fichiers à mettre à la racine GitHub Pages :
 - index.html
