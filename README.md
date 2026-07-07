@@ -1,8 +1,10 @@
-# ADR PO Assistant V6
+# ADR PO Assistant V7
 
-Application GitHub Pages pour gérer ADR, CR, décisions, actions, risques, divergences et versions.
+V7 avec migration automatique des anciennes données et deux ADR de démarrage :
+- Gestion des traductions
+- Définition d'un module
 
-Fichiers à la racine :
+Fichiers à mettre à la racine GitHub Pages :
 - index.html
 - style.css
 - app.js
