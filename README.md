@@ -1,15 +1,12 @@
-# ADR PO Assistant V8
+# ADR PO Assistant V10
 
-V8 avec import intelligent compatible V4.
+Version avec import V4/V9, génération de prompt fiabilisée, historique et validation obligatoire avant diffusion.
 
-Pour récupérer ton historique :
-1. Ouvre le site
-2. Clique sur Import JSON
-3. Sélectionne `po_assistant_v4_sauvegarde.json`
-4. Les sujets et versions sont convertis automatiquement
+Fichiers à la racine GitHub Pages : index.html, style.css, app.js, README.md
 
-Fichiers à mettre à la racine GitHub Pages :
-- index.html
-- style.css
-- app.js
-- README.md
+## Nouveautés V10
+
+- Tout résultat d'analyse est enregistré en brouillon.
+- Une validation humaine explicite est obligatoire.
+- La génération du mail est bloquée tant que le compte rendu n'est pas validé.
+- L'export utilise le format V10 et les anciennes sauvegardes restent importables.

@@ -1,126 +1,189 @@
 <!doctype html>
 <html lang="fr">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>ADR PO Assistant V8</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-<header>
-  <div>
-    <h1>ADR PO Assistant V8</h1>
-    <p>Assistant PO · ADR · CR · décisions · actions · risques · divergences · historique</p>
-  </div>
-  <div>
-    <button onclick="openAnalyzer()">🤖 Nouvelle analyse</button>
-    <button class="secondary" onclick="openMail()">📧 Mail CR</button>
-    <button class="secondary" onclick="exportData()">💾 Export JSON</button>
-    <label class="button secondary">📥 Import JSON<input type="file" accept=".json" onchange="importData(event)" hidden></label>
-  </div>
-</header>
-
-<div class="app">
-  <aside>
-    <button onclick="newTopic()">+ Sujet</button>
-    <input id="topicSearch" placeholder="Rechercher un sujet..." oninput="render()">
-    <div id="topicList"></div>
-    <div class="tip">
-      <b>V8</b><br>
-      Import intelligent compatible avec ta sauvegarde V4 : <b>subjects / adr</b>.
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>ADR PO Assistant V10</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <div>
+        <h1>ADR PO Assistant V10</h1>
+        <p>
+          Assistant PO · ADR · CR · décisions · actions · risques · divergences
+          · historique
+        </p>
+      </div>
+      <div>
+        <button id="btnOpenAnalyzer">🤖 Nouvelle analyse</button
+        ><button id="btnOpenMail" class="secondary">📧 Mail CR</button
+        ><button id="btnExport" class="secondary">💾 Export JSON</button
+        ><label class="button secondary"
+          >📥 Import JSON<input
+            id="fileImport"
+            type="file"
+            accept=".json"
+            hidden
+        /></label>
+      </div>
+    </header>
+    <div class="app">
+      <aside>
+        <button id="btnNewTopic">+ Sujet</button
+        ><input id="topicSearch" placeholder="Rechercher un sujet..." />
+        <div id="topicList"></div>
+        <div class="tip">
+          <b>V10 · validation sécurisée</b><br />Import compatible avec ta sauvegarde V4 :
+          <b>subjects / adr</b>.
+        </div>
+      </aside>
+      <main>
+        <section class="card hero">
+          <div>
+            <small>Sujet sélectionné</small>
+            <h2 id="topicTitle"></h2>
+            <p id="topicDesc"></p>
+            <div id="topicTags"></div>
+          </div>
+          <div>
+            <button id="btnOpenAdr">+ ADR manuel</button
+            ><button id="btnEditTopic" class="secondary">Modifier sujet</button>
+          </div>
+        </section>
+        <section class="kpis">
+          <div><b id="kAdr">0</b><span>ADR actifs</span></div>
+          <div><b id="kVer">0</b><span>Versions</span></div>
+          <div><b id="kDec">0</b><span>Décisions</span></div>
+          <div><b id="kAct">0</b><span>Actions</span></div>
+          <div><b id="kDiv">0</b><span>Divergences</span></div>
+          <div><b id="kRisk">0</b><span>Risques</span></div>
+        </section>
+        <nav class="tabs">
+          <button data-tab="timeline" class="active">📅 Timeline</button
+          ><button data-tab="versions">🕘 Historique</button
+          ><button data-tab="decisions">📌 Décisions</button
+          ><button data-tab="actions">✅ Actions</button
+          ><button data-tab="divergences">❗ Divergences</button
+          ><button data-tab="risks">⚠️ Risques</button
+          ><button data-tab="search">🔎 Recherche</button>
+        </nav>
+        <section id="tab-timeline" class="panel card active">
+          <h2>Timeline des ADR / ateliers</h2>
+          <div id="timeline"></div>
+        </section>
+        <section id="tab-versions" class="panel card">
+          <h2>Historique des versions</h2>
+          <div id="versions"></div>
+        </section>
+        <section id="tab-decisions" class="panel card">
+          <h2>Décisions consolidées</h2>
+          <div id="decisions"></div>
+        </section>
+        <section id="tab-actions" class="panel card">
+          <h2>Actions consolidées</h2>
+          <div id="actions"></div>
+        </section>
+        <section id="tab-divergences" class="panel card">
+          <h2>Points de divergence / à travailler</h2>
+          <div id="divergences"></div>
+        </section>
+        <section id="tab-risks" class="panel card">
+          <h2>Risques</h2>
+          <div id="risks"></div>
+        </section>
+        <section id="tab-search" class="panel card">
+          <h2>Recherche globale</h2>
+          <input
+            id="globalSearch"
+            placeholder="Ex : PAETRAD, module, common, cycle de vie..."
+          />
+          <div id="searchResults"></div>
+        </section>
+      </main>
     </div>
-  </aside>
-
-  <main>
-    <section class="card hero">
-      <div>
-        <small>Sujet sélectionné</small>
-        <h2 id="topicTitle"></h2>
-        <p id="topicDesc"></p>
-        <div id="topicTags"></div>
+    <div id="analyzer" class="modal hidden">
+      <div class="modal-card">
+        <h2>🤖 Analyse transcription Teams</h2>
+        <p class="tip">
+          Copie le prompt dans ChatGPT puis colle le JSON retourné. Le mode
+          “nouvelle version” conserve automatiquement l’ancienne version.
+        </p>
+        <div class="two">
+          <div>
+            <label>Sujet cible</label
+            ><select id="anTopic"></select>
+          </div>
+          <div><label>Titre optionnel</label><input id="anTitle" /></div>
+        </div>
+        <label>Transcription Teams</label
+        ><textarea id="transcript" class="big"></textarea
+        ><button id="btnMakePrompt">Générer prompt</button><label>Prompt</label
+        ><textarea id="prompt" class="code" readonly></textarea
+        ><button id="btnCopyPrompt" class="secondary">Copier prompt</button
+        ><label>JSON retourné</label
+        ><textarea id="jsonInput" class="code"></textarea>
+        <div class="two">
+          <div>
+            <label>Mode</label
+            ><select id="saveMode">
+              <option value="new">Créer nouvel ADR</option>
+              <option value="version">Nouvelle version du dernier ADR</option>
+              <option value="replace">Remplacer sans historiser</option>
+            </select>
+          </div>
+          <div>
+            <label>Sujet destination</label
+            ><select id="saveTopic"></select>
+          </div>
+        </div>
+        <button id="btnSaveJson">Enregistrer</button
+        ><button id="btnCloseAnalyzer" class="secondary">Fermer</button>
       </div>
-      <div>
-        <button onclick="openAdr()">+ ADR manuel</button>
-        <button class="secondary" onclick="editTopic()">Modifier sujet</button>
+    </div>
+    <div id="adrModal" class="modal hidden">
+      <div class="modal-card">
+        <h2 id="adrTitle"></h2>
+        <p id="versionNote" class="tip"></p>
+        <div class="two">
+          <div><label>Titre</label><input id="eTitle" /></div>
+          <div><label>Date</label><input id="eDate" /></div>
+        </div>
+        <label>Participants</label><input id="eParticipants" /><label
+          >Objectif</label
+        ><textarea id="eObjective"></textarea><label>Points abordés</label
+        ><textarea id="ePoints"></textarea><label>Compte rendu</label
+        ><textarea id="eSummary" class="big"></textarea
+        ><label>Divergences</label><textarea id="eDivergences"></textarea
+        ><label>Décisions</label><textarea id="eDecisions"></textarea
+        ><label>Actions</label><textarea id="eActions"></textarea
+        ><label>Risques</label><textarea id="eRisks"></textarea
+        ><label>Questions ouvertes</label><textarea id="eQuestions"></textarea
+        ><button id="btnSaveAdr">Enregistrer le brouillon</button
+        ><button id="btnValidateAdr">✓ Valider le compte rendu</button
+        ><button id="btnSaveVersion">Nouvelle version</button
+        ><button id="btnDeleteAdr" class="danger">Supprimer</button
+        ><button id="btnCloseAdr" class="secondary">Fermer</button>
       </div>
-    </section>
-
-    <section class="kpis">
-      <div><b id="kAdr">0</b><span>ADR actifs</span></div>
-      <div><b id="kVer">0</b><span>Versions</span></div>
-      <div><b id="kDec">0</b><span>Décisions</span></div>
-      <div><b id="kAct">0</b><span>Actions</span></div>
-      <div><b id="kDiv">0</b><span>Divergences</span></div>
-      <div><b id="kRisk">0</b><span>Risques</span></div>
-    </section>
-
-    <nav class="tabs">
-      <button class="active" onclick="tab('timeline',this)">📅 Timeline</button>
-      <button onclick="tab('versions',this)">🕘 Historique</button>
-      <button onclick="tab('decisions',this)">📌 Décisions</button>
-      <button onclick="tab('actions',this)">✅ Actions</button>
-      <button onclick="tab('divergences',this)">❗ Divergences</button>
-      <button onclick="tab('risks',this)">⚠️ Risques</button>
-      <button onclick="tab('search',this)">🔎 Recherche</button>
-    </nav>
-
-    <section id="tab-timeline" class="panel card active"><h2>Timeline des ADR / ateliers</h2><div id="timeline"></div></section>
-    <section id="tab-versions" class="panel card"><h2>Historique des versions</h2><div id="versions"></div></section>
-    <section id="tab-decisions" class="panel card"><h2>Décisions consolidées</h2><div id="decisions"></div></section>
-    <section id="tab-actions" class="panel card"><h2>Actions consolidées</h2><div id="actions"></div></section>
-    <section id="tab-divergences" class="panel card"><h2>Points de divergence / à travailler</h2><div id="divergences"></div></section>
-    <section id="tab-risks" class="panel card"><h2>Risques</h2><div id="risks"></div></section>
-    <section id="tab-search" class="panel card">
-      <h2>Recherche globale</h2>
-      <input id="globalSearch" placeholder="Ex : PAETRAD, module, common, cycle de vie..." oninput="renderSearch()">
-      <div id="searchResults"></div>
-    </section>
-  </main>
-</div>
-
-<div id="analyzer" class="modal hidden"><div class="modal-card">
-<h2>🤖 Analyse transcription Teams</h2>
-<p class="tip">Copie le prompt dans ChatGPT puis colle le JSON retourné. Le mode “nouvelle version” conserve automatiquement l’ancienne version.</p>
-<div class="two"><div><label>Sujet cible</label><select id="anTopic"></select></div><div><label>Titre optionnel</label><input id="anTitle"></div></div>
-<label>Transcription Teams</label><textarea id="transcript" class="big"></textarea>
-<button onclick="makePrompt()">Générer prompt</button>
-<label>Prompt</label><textarea id="prompt" class="code" readonly></textarea>
-<button class="secondary" onclick="copyPrompt()">Copier prompt</button>
-<label>JSON retourné</label><textarea id="jsonInput" class="code"></textarea>
-<div class="two"><div><label>Mode</label><select id="saveMode"><option value="new">Créer nouvel ADR</option><option value="version">Nouvelle version du dernier ADR</option><option value="replace">Remplacer sans historiser</option></select></div><div><label>Sujet destination</label><select id="saveTopic"></select></div></div>
-<button onclick="saveJson()">Enregistrer</button><button class="secondary" onclick="closeAnalyzer()">Fermer</button>
-</div></div>
-
-<div id="adrModal" class="modal hidden"><div class="modal-card">
-<h2 id="adrTitle"></h2><p id="versionNote" class="tip"></p>
-<div class="two"><div><label>Titre</label><input id="eTitle"></div><div><label>Date</label><input id="eDate"></div></div>
-<label>Participants</label><input id="eParticipants">
-<label>Objectif</label><textarea id="eObjective"></textarea>
-<label>Points abordés</label><textarea id="ePoints"></textarea>
-<label>Compte rendu</label><textarea id="eSummary" class="big"></textarea>
-<label>Divergences</label><textarea id="eDivergences"></textarea>
-<label>Décisions</label><textarea id="eDecisions"></textarea>
-<label>Actions</label><textarea id="eActions"></textarea>
-<label>Risques</label><textarea id="eRisks"></textarea>
-<label>Questions ouvertes</label><textarea id="eQuestions"></textarea>
-<button onclick="saveAdr()">Enregistrer</button><button onclick="saveVersion()">Nouvelle version</button><button class="danger" onclick="deleteAdr()">Supprimer</button><button class="secondary" onclick="closeAdr()">Fermer</button>
-</div></div>
-
-<div id="mailModal" class="modal hidden"><div class="modal-card">
-<h2>📧 Mail de CR</h2>
-<select id="mailSelect"></select>
-<button onclick="makeMail()">Générer</button>
-<textarea id="mailOutput" class="code"></textarea>
-<button class="secondary" onclick="copyMail()">Copier</button>
-<button class="secondary" onclick="closeMail()">Fermer</button>
-</div></div>
-
-<div id="versionModal" class="modal hidden"><div class="modal-card">
-<h2>Version historique</h2>
-<div id="versionDetail"></div>
-<button onclick="restoreVersion()">Restaurer comme version active</button>
-<button class="secondary" onclick="closeVersion()">Fermer</button>
-</div></div>
-
-<script src="app.js"></script>
-</body></html>
+    </div>
+    <div id="mailModal" class="modal hidden">
+      <div class="modal-card">
+        <h2>📧 Mail de CR</h2>
+        <select id="mailSelect"></select
+        ><button id="btnMakeMail">Générer</button
+        ><textarea id="mailOutput" class="code"></textarea
+        ><button id="btnCopyMail" class="secondary">Copier</button
+        ><button id="btnCloseMail" class="secondary">Fermer</button>
+      </div>
+    </div>
+    <div id="versionModal" class="modal hidden">
+      <div class="modal-card">
+        <h2>Version historique</h2>
+        <div id="versionDetail"></div>
+        <button id="btnRestoreVersion">Restaurer comme version active</button
+        ><button id="btnCloseVersion" class="secondary">Fermer</button>
+      </div>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>
